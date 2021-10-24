@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Assignment2</string>
+    <string name="button">Button</string>
+    <string name="name">Name</string>
+    <string name="your_name">Your name</string>
+    <string name="hello">\"Hello, \"</string>
+    <string name="hello_button">Hello!</string>
+    <string name="say_hello">SAY HELLO</string>
+    <string name="this_is_a_popup_window">This is a popup window.</string>
+    <string name="button2">Button2</string>
+    <string name="button1" tools:ignore="Typos">Button1</string>
+</resources>
