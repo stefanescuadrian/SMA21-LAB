@@ -1,2 +1,2 @@
 # SMA21-LAB
-SMA 2021 - Laborator
+SMA 2021 - Laborator - Ștefănescu Adrian
