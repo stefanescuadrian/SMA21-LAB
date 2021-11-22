@@ -66,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Update"
+        android:onClick="clicked"
         android:layout_below="@+id/topLinearLayout"
         android:layout_centerInParent="true"/>
 
