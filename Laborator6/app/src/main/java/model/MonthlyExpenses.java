@@ -2,13 +2,13 @@ package model;
 
 public class MonthlyExpenses {
     public String month;
-    private float income, expenses;
+    private String income, expenses;
 
     public MonthlyExpenses(){
 
     }
 
-    public MonthlyExpenses(String month, float income, float expenses){
+    public MonthlyExpenses(String month, String income, String expenses){
         this.month = month;
         this.income = income;
         this.expenses = expenses;
@@ -18,11 +18,11 @@ public class MonthlyExpenses {
         return month;
     }
 
-    public float getIncome() {
+    public String getIncome() {
         return income;
     }
 
-    public float getExpenses() {
+    public String getExpenses() {
         return expenses;
     }
 

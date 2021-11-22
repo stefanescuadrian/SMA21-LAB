@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -83,6 +84,27 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.btnUpdate:
+
+                try{
+                if (!eSearch.getText().toString().isEmpty() && !eIncome.getText().toString().isEmpty() && !eExpenses.getText().toString().isEmpty()) {
+                    MonthlyExpenses monthlyExpenses = new MonthlyExpenses(eSearch.getText().toString(), eIncome.getText().toString(), eExpenses.getText().toString());
+                    HashMap updateExpenses = new HashMap();
+                    updateExpenses.put("income", monthlyExpenses.getIncome());
+                    updateExpenses.put("expenses", monthlyExpenses.getExpenses());
+
+                    databaseReference.child("calendar").child(eSearch.getText().toString()).updateChildren(updateExpenses).addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            System.out.println("Successful!");
+                        }
+                    });
+                }
+                 else {
+                    Toast.makeText(this, "Search field may not be empty", Toast.LENGTH_LONG);
+                }}catch (NullPointerException e){
+                    System.out.println("Unsuccessful!");
+
+                }
                 break;
         }
     }
