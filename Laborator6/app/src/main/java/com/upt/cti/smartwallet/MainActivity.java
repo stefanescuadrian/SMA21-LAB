@@ -51,16 +51,14 @@ public class MainActivity extends AppCompatActivity {
         database.setPersistenceEnabled(true);
         databaseReference = database.getReference();
 
-        databaseReference.child("calendar").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("calendar").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                final List<MonthlyExpenses> monthlyExpensesList = new ArrayList<>();
                 final List <String> monthNames = new ArrayList<>();
                 monthNames.add("Select month");
 
                 for (DataSnapshot eachSnapShot : snapshot.getChildren()) {
                     monthNames.add(eachSnapShot.getKey());
-                    System.out.println("PRINT EACH SNAPSHOT" + eachSnapShot);
                 }
                 final ArrayAdapter<String> sAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, monthNames);
 
@@ -107,26 +105,26 @@ public class MainActivity extends AppCompatActivity {
     public void clicked(View view){
         switch (view.getId()){
             case R.id.btnUpdate:
+                try{
+                 if (!eIncome.getText().toString().isEmpty() && !eExpenses.getText().toString().isEmpty()) {
+                    MonthlyExpenses monthlyExpenses = new MonthlyExpenses(spinner.getSelectedItem().toString(), eIncome.getText().toString(), eExpenses.getText().toString());
+                    HashMap updateExpenses = new HashMap();
+                    updateExpenses.put("income", monthlyExpenses.getIncome());
+                    updateExpenses.put("expenses", monthlyExpenses.getExpenses());
 
-//                try{
-//                if (!eIncome.getText().toString().isEmpty() && !eExpenses.getText().toString().isEmpty()) {
-//                    HashMap updateExpenses = new HashMap();
-//                    updateExpenses.put("income", monthlyExpenses.getIncome());
-//                    updateExpenses.put("expenses", monthlyExpenses.getExpenses());
-//
-//                    databaseReference.child("calendar").child(eSearch.getText().toString()).updateChildren(updateExpenses).addOnCompleteListener(new OnCompleteListener() {
-//                        @Override
-//                        public void onComplete(@NonNull Task task) {
-//                            System.out.println("Successful!");
-//                        }
-//                    });
-//                }
-//                 else {
-//                    Toast.makeText(this, "Search field may not be empty", Toast.LENGTH_LONG);
-//                }}catch (NullPointerException e){
-//                    System.out.println("Unsuccessful!");
-//
-//                }
+                    databaseReference.child("calendar").child(spinner.getSelectedItem().toString()).updateChildren(updateExpenses).addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            System.out.println("Successful!");
+                        }
+                    });
+                }
+                 else {
+                    Toast.makeText(this, "Search field may not be empty", Toast.LENGTH_LONG);
+                }}catch (NullPointerException e){
+                    System.out.println("Unsuccessful!");
+
+                }
                 break;
         }
     }
