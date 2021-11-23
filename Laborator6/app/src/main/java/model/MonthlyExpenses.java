@@ -2,6 +2,15 @@ package model;
 
 public class MonthlyExpenses {
     public String month;
+
+    public void setIncome(String income) {
+        this.income = income;
+    }
+
+    public void setExpenses(String expenses) {
+        this.expenses = expenses;
+    }
+
     private String income, expenses;
 
     public MonthlyExpenses(){
