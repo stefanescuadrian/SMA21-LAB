@@ -3,8 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator6/app/src/main/res/layout/activity_main.xml" value="0.2" />
-        <entry key="..\:/SMA_Laborator/SMA21-LAB/SmartWallet/app/src/main/res/layout/activity_main.xml" value="0.176" />
+        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/activity_add_new_payment.xml" value="0.2" />
+        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/activity_main.xml" value="0.19021739130434784" />
+        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/item_payment.xml" value="0.12708333333333333" />
       </map>
     </option>
   </component>
