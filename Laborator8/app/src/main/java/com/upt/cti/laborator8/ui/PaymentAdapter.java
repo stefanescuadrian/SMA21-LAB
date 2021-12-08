@@ -1,4 +1,4 @@
-package ui;
+package com.upt.cti.laborator8.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,11 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import androidx.recyclerview.widget.RecyclerView;
-
 
 
 import com.upt.cti.laborator8.Payment;
@@ -33,6 +31,7 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
     public View getView(int position, View convertView, ViewGroup parent){
         ItemHolder itemHolder;
         View view = convertView;
+        final Payment pItem = payments.get(position);
 
         if (view == null){
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -46,15 +45,20 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
             itemHolder.tTime = (TextView) view.findViewById(R.id.tTime);
             itemHolder.tCost = (TextView) view.findViewById(R.id.tCost);
             itemHolder.tType = (TextView) view.findViewById(R.id.tType);
+            itemHolder.iEdit = (ImageView) view.findViewById(R.id.imgEdit);
+            itemHolder.iDelete = (ImageView) view.findViewById(R.id.imgDelete);
 
             view.setTag(itemHolder);
+
+
+            itemHolder.tName.setText(pItem.getName());
         }
         else
         {
             itemHolder = (ItemHolder) view.getTag();
         }
 
-        final Payment pItem = payments.get(position);
+
 
         itemHolder.tIndex.setText(String.valueOf(position+1));
         itemHolder.tName.setText(pItem.getName());
@@ -63,7 +67,17 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
         itemHolder.tType.setText(pItem.getType());
         itemHolder.tDate.setText("Date: " + pItem.timestamp.substring(0, 10));
         itemHolder.tTime.setText("Time: " + pItem.timestamp.substring(11));
-
+        itemHolder.iEdit.bringToFront();
+        itemHolder.iEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.printf("testtesttest");
+            }
+        });
+                itemHolder.iDelete.bringToFront();
+        itemHolder.iDelete.setOnClickListener(view12 -> {
+            // delete payment at position
+        });
         return  view;
 
     }
@@ -77,6 +91,7 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
         RelativeLayout lHeader;
         TextView tDate, tTime;
         TextView tCost, tType;
+        ImageView iEdit, iDelete;
     }
 
 }

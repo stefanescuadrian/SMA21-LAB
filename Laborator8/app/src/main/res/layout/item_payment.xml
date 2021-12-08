@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp">
+        android:padding="8dp">
 
         <RelativeLayout
             android:id="@+id/lHeader"
@@ -38,7 +38,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/lHeader"
             android:padding="4dp">
@@ -47,14 +47,14 @@
                 android:id="@+id/tDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Date: 2016-10-26"/>
+                android:hint="Date: 2016-10-26" />
 
             <TextView
                 android:id="@+id/tTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tDate"
-                android:hint="Time: 11:15:05"/>
+                android:hint="Time: 11:15:05" />
 
             <TextView
                 android:id="@+id/tCost"
@@ -63,16 +63,39 @@
                 android:layout_alignParentRight="true"
                 android:hint="12.5"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_below="@+id/tCost"
+                android:layout_alignParentRight="true"
                 android:hint="food"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
+
+            <ImageView
+                android:id="@+id/imgEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tType"
+                android:layout_alignParentRight="true"
+                android:background="@color/black"
+                android:onClick="clicked1"
+                android:clickable="true"
+                android:src="@drawable/ic_edit" />
+
+            <ImageView
+                android:id="@+id/imgDelete"
+                android:src="@drawable/ic_delete"
+                android:background="@color/black"
+                android:clickable="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="clicked2"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/imgEdit" />
+
         </RelativeLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

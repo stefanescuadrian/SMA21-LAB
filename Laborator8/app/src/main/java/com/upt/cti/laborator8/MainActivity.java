@@ -8,9 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,19 +20,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import ui.PaymentAdapter;
+import com.upt.cti.laborator8.ui.AddPaymentActivity;
+import com.upt.cti.laborator8.ui.PaymentAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
@@ -111,7 +105,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        listPayments.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
+                AppState.get().setCurrentPayment(payments.get(i));
+                startActivity(new Intent(getApplicationContext(), AddPaymentActivity.class));
+            }
+        });
        adapter.notifyDataSetChanged();
 
     }
@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
     public void clicked(View view) {
         switch(view.getId()) {
             case R.id.fabAdd:
-                startActivity(new Intent(MainActivity.this, AddNewPaymentActivity.class));
+                AppState.get().setCurrentPayment(null);
+                startActivity(new Intent(this, AddNewPaymentActivity.class));
                 break;
         }
 

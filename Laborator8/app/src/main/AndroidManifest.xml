@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Laborator8">
         <activity
+            android:name="com.upt.cti.laborator8.ui.AddPaymentActivity"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+        <activity
             android:name=".AddNewPaymentActivity"
             android:exported="false" />
         <activity

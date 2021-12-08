@@ -4,8 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/activity_add_new_payment.xml" value="0.2" />
+        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/activity_add_payment.xml" value="0.6" />
         <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/activity_main.xml" value="0.19021739130434784" />
-        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/item_payment.xml" value="0.12708333333333333" />
+        <entry key="..\:/SMA_Laborator/SMA21-LAB/Laborator8/app/src/main/res/layout/item_payment.xml" value="0.35294117647058826" />
       </map>
     </option>
   </component>
