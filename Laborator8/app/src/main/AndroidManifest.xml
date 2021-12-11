@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.upt.cti.laborator8">
+    package="com.upt.cti.smartwallet">
 
     <application
         android:allowBackup="true"
@@ -10,17 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Laborator8">
         <activity
-            android:name="com.upt.cti.laborator8.ui.AddPaymentActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
-        <activity
-            android:name=".AddNewPaymentActivity"
-            android:exported="false" />
+            android:name=".ui.AddPaymentActivity"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

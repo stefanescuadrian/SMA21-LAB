@@ -1,4 +1,4 @@
-package com.upt.cti.laborator8;
+package com.upt.cti.smartwallet;
 
 import android.content.Context;
 
