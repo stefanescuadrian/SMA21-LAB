@@ -1,4 +1,4 @@
-package com.upt.cti.laborator8.ui;
+package com.upt.cti.smartwallet.model;
 
 import android.graphics.Color;
 
@@ -15,11 +15,5 @@ public class PaymentType {
             return Color.rgb(230, 140, 0);
         else
             return Color.rgb(100, 100, 100);
-    }
-
-
-    public static String[] getTypes() {
-        String[] types = {"entertainment","food","taxes","travel"};
-        return types;
     }
 }
