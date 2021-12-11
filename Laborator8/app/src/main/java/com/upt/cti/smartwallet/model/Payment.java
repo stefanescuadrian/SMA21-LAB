@@ -1,6 +1,8 @@
 package com.upt.cti.smartwallet.model;
 
-public class Payment {
+import java.io.Serializable;
+
+public class Payment implements Serializable {
     public String getTimestamp() {
         return timestamp;
     }
@@ -47,5 +49,14 @@ public class Payment {
         this.paymentCost = cost;
         this.paymentName = name;
         this.paymentType = type;
+    }
+
+    public Payment recreatePayment(){
+        Payment payment = new Payment();
+        payment.paymentCost = paymentCost;
+        payment.paymentName = new String(paymentName);
+        payment.paymentType = new String(paymentType);
+        payment.timestamp = new String(timestamp);
+        return payment;
     }
 }

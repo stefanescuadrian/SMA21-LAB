@@ -1,9 +1,14 @@
 package com.upt.cti.smartwallet;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.ChildEventListener;
@@ -26,6 +32,7 @@ import com.upt.cti.smartwallet.ui.AddPaymentActivity;
 import com.upt.cti.smartwallet.ui.AppState;
 import com.upt.cti.smartwallet.ui.PaymentAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView paymentsListView;
     private int currentMonth;
     private SharedPreferences preferences;
+    private ActivityResultLauncher<Intent> activityResultLauncher;
     PaymentAdapter adapter;
 
 
@@ -63,6 +71,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentMonth == -1)
             currentMonth = Month.monthFromDate(AppState.getDate());
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // There are no request codes
+                            Intent data = result.getData();
+                            loadLocal();
+                        }
+                    }
+                });
 
         fabAdd.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -88,63 +109,106 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Setup for firebase
-        final FirebaseDatabase database = FirebaseDatabase.getInstance("https://smart-wallet-bb6f8-default-rtdb.europe-west1.firebasedatabase.app/");
-        databaseReference = database.getReference();
-        AppState.get().setDatabaseReference(databaseReference);
+        if (!AppState.isNetworkAvailable(this)) {
+            loadLocal();
+        } else {
+            // setup firebase
+            final FirebaseDatabase database = FirebaseDatabase.getInstance("https://smart-wallet-bb6f8-default-rtdb.europe-west1.firebasedatabase.app/");
+            databaseReference = database.getReference();
+            AppState.get().setDatabaseReference(databaseReference);
+            for (Month month : Month.values()) {
+                List<Payment> localPayments = AppState.get().loadFromLocalBackup(MainActivity.this, Month.getMonthIndexFromName(month));
+                for (Payment paymentItm : localPayments) {
+                    databaseReference.child("wallet").child(paymentItm.timestamp).setValue(paymentItm);
+                }
+            }
 
-        databaseReference.child("wallet").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (currentMonth == Month.monthFromDate(snapshot.getKey())){
+            databaseReference.child("wallet").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     Payment payment = snapshot.getValue(Payment.class);
                     payment.timestamp = snapshot.getKey();
-                    paymentsList.add(payment);
+                    try {
+                        AppState.get().updateLocalBackup(MainActivity.this, payment, true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (currentMonth == Month.monthFromDate(snapshot.getKey())) {
+                        paymentsList.add(payment);
+                        adapter.notifyDataSetChanged();
+                    }
+                    if (paymentsList.isEmpty()) {
+                        tStatus.setText(String.format("No payment for %s ", Month.getMonthFromIndex(currentMonth)));
+                    } else {
+                        tStatus.setText(String.format("Payments for %s...", Month.getMonthFromIndex(currentMonth)));
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    Payment payment = snapshot.getValue(Payment.class);
+                    payment.timestamp = snapshot.getKey();
+                    for (int i = 0; i < paymentsList.size(); i++) {
+                        if (paymentsList.get(i).timestamp.equals(payment.timestamp)) {
+                            paymentsList.set(i, payment);
+                        }
+                    }
                     adapter.notifyDataSetChanged();
-                }
-                if(paymentsList.isEmpty()){
-                    tStatus.setText(String.format("No payment for %s ", Month.getMonthFromIndex(currentMonth)));
-                }
-                else {
-                    tStatus.setText(String.format("Payments for %s...", Month.getMonthFromIndex(currentMonth)));
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Payment payment = snapshot.getValue(Payment.class);
-                payment.timestamp = snapshot.getKey();
-                for (int i = 0;  i < paymentsList.size(); i++){
-                    if (paymentsList.get(i).timestamp.equals(payment.timestamp)){
-                        paymentsList.set(i, payment);
+                    try {
+                        AppState.get().updateLocalBackup(MainActivity.this, payment, false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        AppState.get().updateLocalBackup(MainActivity.this, payment, true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                adapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Payment payment = snapshot.getValue(Payment.class);
-                payment.timestamp = snapshot.getKey();
-                for (int i = 0;  i < paymentsList.size(); i++){
-                    if (paymentsList.get(i).timestamp.equals(payment.timestamp)){
-                        paymentsList.remove(i);
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    Payment payment = snapshot.getValue(Payment.class);
+                    payment.timestamp = snapshot.getKey();
+                    for (int i = 0; i < paymentsList.size(); i++) {
+                        if (paymentsList.get(i).timestamp.equals(payment.timestamp)) {
+                            paymentsList.remove(i);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    try {
+                        AppState.get().updateLocalBackup(MainActivity.this, payment, false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    private void loadLocal(){
+            if (AppState.get().hasLocalStorage(this)) {
+                paymentsList = AppState.get().loadFromLocalBackup(MainActivity.this, currentMonth);
+                tStatus.setText("Found " + paymentsList.size() + " payments for " +
+                        Month.getMonthFromIndex(currentMonth) + ".");
+                adapter.clear();
+                adapter.addAll(paymentsList);
                 adapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "Need internet connection!", Toast.LENGTH_SHORT).show();
+                return;
             }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
 
@@ -153,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.fabAdd:
                 Intent addIntent = new Intent(MainActivity.this, AddPaymentActivity.class);
                 addIntent.putExtra("ACTION", "ADD");
-                MainActivity.this.startActivity(addIntent);
+                activityResultLauncher.launch(addIntent);
                 break;
             case R.id.btnPrevious:
                 if (currentMonth == 0){ //reset from 11

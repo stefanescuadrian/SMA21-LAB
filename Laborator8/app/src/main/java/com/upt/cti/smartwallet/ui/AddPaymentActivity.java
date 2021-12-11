@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.upt.cti.smartwallet.R;
 import com.upt.cti.smartwallet.model.Payment;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class AddPaymentActivity extends AppCompatActivity {
         private EditText ePaymentCost;
         private EditText ePaymentName;
         private Spinner sPaymentType;
-    private Button btnSave;
+        private Button btnSave;
         private List<String> paymentTypes;
 
 
@@ -128,17 +129,20 @@ public class AddPaymentActivity extends AppCompatActivity {
         payment.setPaymentType(paymentType);
         return payment;
     }
-    private void add() {
-        if (databaseReference != null) {
-            Payment payment = generateNewPayment();
-            String dateTime = getDate();
+    private void add() throws IOException {
+        Payment payment = generateNewPayment();
+        String dateTime = getDate();
             if(payment != null){
+                payment.timestamp = dateTime;
+                if (databaseReference != null) {
                 databaseReference.child("wallet").child(dateTime).setValue(payment);
+            } else {
+                    Toast.makeText(this, "No database connected", Toast.LENGTH_SHORT).show();
+                    AppState.get().updateLocalBackup(this,payment,true);
+                }
+                setResult(RESULT_OK);
                 finish();
                 Toast.makeText(this, "Payment added", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "No database connected", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -148,19 +152,22 @@ public class AddPaymentActivity extends AppCompatActivity {
         return sdfDate.format(now);
     }
 
-    private void edit(){
-        if (databaseReference != null) {
+    private void edit() throws IOException {
             Payment payment = getEditedPayment(AppState.get().getCurrentPayment());
-            if(payment != null){
-                databaseReference.child("wallet").child(payment.timestamp).setValue(payment);
+            if(payment != null) {
+                if (databaseReference != null) {
+                    databaseReference.child("wallet").child(payment.timestamp).setValue(payment);
+                } else {
+                    Toast.makeText(this, "No database connected", Toast.LENGTH_SHORT).show();
+                    AppState.get().updateLocalBackup(this, payment, false);
+                    AppState.get().updateLocalBackup(this, payment, true);
+                }
+                setResult(RESULT_OK);
                 finish();
                 Toast.makeText(this, "Payment updated", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(this, "No database connected", Toast.LENGTH_SHORT).show();
-        }
     }
-    public void clicked(View view) {
+    public void clicked(View view) throws IOException {
         switch (view.getId()){
             case R.id.btnSave:
                 if(action == Actions.ADD){

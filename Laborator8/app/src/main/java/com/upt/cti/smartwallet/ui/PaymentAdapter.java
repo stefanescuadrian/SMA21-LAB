@@ -12,10 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.firebase.database.DatabaseReference;
 import com.upt.cti.smartwallet.R;
 import com.upt.cti.smartwallet.model.Payment;
 import com.upt.cti.smartwallet.model.PaymentType;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PaymentAdapter extends ArrayAdapter<Payment> {
@@ -69,7 +71,11 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
             @Override
             public void onClick(View v) {
                 if(paymentItem!=null){
-                    delete(paymentItem.timestamp);
+                    try {
+                        delete(paymentItem);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(context,"Payment was deleted...", Toast.LENGTH_LONG).show();
                 } else
                 {
@@ -91,7 +97,15 @@ public class PaymentAdapter extends ArrayAdapter<Payment> {
         return view;
     }
 
-    private void delete(String timestamp){
-        AppState.get().getDatabaseReference().child("wallet").child(timestamp).removeValue();
+    private void delete(Payment payment) throws IOException {
+        DatabaseReference databaseReference = AppState.get().getDatabaseReference();
+        if (databaseReference != null){
+            databaseReference.child("wallet").child(payment.timestamp).removeValue();
+        } else {
+            AppState.get().updateLocalBackup(context, payment, false);
+            this.remove(payment);
+            this.notifyDataSetChanged();
+        }
+
     }
 }
