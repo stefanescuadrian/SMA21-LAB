@@ -36,19 +36,30 @@ public class Payment implements Serializable {
     }
 
     public String timestamp;
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     private double paymentCost;
     private String paymentName;
     private String paymentType;
+    private String user;
 
     public Payment() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Payment(String timestamp, double cost, String name, String type) {
+    public Payment(String timestamp, double cost, String name, String type, String user) {
         this.timestamp = timestamp;
         this.paymentCost = cost;
         this.paymentName = name;
         this.paymentType = type;
+        this.user = user;
     }
 
     public Payment recreatePayment(){

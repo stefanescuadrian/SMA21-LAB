@@ -98,7 +98,7 @@ try{
         return true;
     }
 
-    public List<Payment> loadFromLocalBackup(Context context, int month){
+    public List<Payment> loadFromLocalBackup(Context context, String month){
         try {
             List<Payment> payments = new ArrayList<>();
 
@@ -107,7 +107,7 @@ try{
                     FileInputStream fis = context.openFileInput(file.getName());
                     ObjectInputStream ois = new ObjectInputStream(fis);
                     Payment payment = (Payment) ois.readObject();
-                    if ((Month.monthFromDate(payment.timestamp)) == month)
+                    if (payment.getTimestamp() == getDate())
                         payments.add(payment);
                     fis.close();
                     ois.close();
@@ -128,5 +128,16 @@ try{
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    public String getTimeStamp(){
+        return currentPayment.timestamp;
+    }
+
+    public String getUser(){
+        return currentPayment.getUser();
+    }
+
+    public void setUser(String user){
+        currentPayment.setUser(user);
+    }
 
 }

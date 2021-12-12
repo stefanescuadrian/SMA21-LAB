@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String MONTH = "Month";
     private static final String PREFERENCES = "preferences";
+    private static final int REQ_SIGNIN = 3;
 
     private DatabaseReference databaseReference;
     private TextView tStatus;
@@ -52,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     PaymentAdapter adapter;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
 
     @Override
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             databaseReference = database.getReference();
             AppState.get().setDatabaseReference(databaseReference);
             for (Month month : Month.values()) {
-                List<Payment> localPayments = AppState.get().loadFromLocalBackup(MainActivity.this, Month.getMonthIndexFromName(month));
+                List<Payment> localPayments = AppState.get().loadFromLocalBackup(MainActivity.this, Month.getMonthStringFromIndex(month));
                 for (Payment paymentItm : localPayments) {
                     databaseReference.child("wallet").child(paymentItm.timestamp).setValue(paymentItm);
                 }
@@ -197,9 +202,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected  void onActivityResult (int requestCode, int resultCord, Intent data) {
+        super.onActivityResult(requestCode, resultCord, data);
+        if (requestCode == REQ_SIGNIN) {
+            if (requestCode == RESULT_OK) {
+                //get data from intent
+                String user = data.getStringExtra("user");
+                String pass = data.getStringExtra("pass");
+                //...
+            } else if (resultCord == RESULT_CANCELED) {
+                // data was not retrived
+            }
+        }
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if (mAuthListener != null){
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
     private void loadLocal(){
             if (AppState.get().hasLocalStorage(this)) {
-                paymentsList = AppState.get().loadFromLocalBackup(MainActivity.this, currentMonth);
+                paymentsList = AppState.get().loadFromLocalBackup(MainActivity.this, Month.getMonthFromIndex(currentMonth).toString());
                 tStatus.setText("Found " + paymentsList.size() + " payments for " +
                         Month.getMonthFromIndex(currentMonth) + ".");
                 adapter.clear();

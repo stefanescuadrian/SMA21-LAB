@@ -77,7 +77,7 @@ public class AddPaymentActivity extends AppCompatActivity {
         String paymentName;
         float paymentCost;
         String paymentType;
-
+        String currentUser = AppState.get().getUser();
         if (!ePaymentName.getText().toString().isEmpty()) {
             paymentName = ePaymentName.getText().toString();
         } else {
@@ -97,7 +97,7 @@ public class AddPaymentActivity extends AppCompatActivity {
             return null;
         }
         paymentType = sPaymentType.getSelectedItem().toString();
-        Payment payment = new Payment(null, paymentCost, paymentName, paymentType);
+        Payment payment = new Payment(null, paymentCost, paymentName, paymentType, currentUser);
         return payment;
     }
 
